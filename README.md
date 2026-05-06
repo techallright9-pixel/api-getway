@@ -1,5 +1,6 @@
-<!-- # University Management API Gateway
+<!-- # Group portal API Gateway
 
+### Example doc
 
 Welcome to the University Management API Gateway project, a tutorial project designed to help you level up your web development skills as part of the "Programming Hero Next Level Web Development Course."
 
