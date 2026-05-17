@@ -101,63 +101,53 @@ const createStudent = z.object({
   })
 });
 
-const createAdmin = z.object({
-  password: z.string().optional(),
+const adminNameSchema = z.union([
+  z.string({ required_error: 'Name is required' }),
+  z.object({
+    firstName: z.string({ required_error: 'First name is required' }),
+    lastName: z.string({ required_error: 'Last name is required' }),
+    middleName: z.string().optional()
+  })
+]);
 
-  admin: z.object({
-    name: z.object({
-      firstName: z.string({
-        required_error: 'First name is required'
+const formatAdminName = (
+  name: string | { firstName: string; lastName: string; middleName?: string }
+): string => {
+  if (typeof name === 'string') {
+    return name.trim();
+  }
+
+  return [name.firstName, name.middleName, name.lastName].filter(Boolean).join(' ').trim();
+};
+
+const createAdmin = z
+  .object({
+    password: z.string().optional(),
+
+    admin: z.object({
+      name: adminNameSchema,
+      email: z
+        .string({
+          required_error: 'Email is required'
+        })
+        .email(),
+      contactNo: z.string({
+        required_error: 'Contact number is required'
       }),
-      lastName: z.string({
-        required_error: 'Last name is required'
+      designation: z.string({
+        required_error: 'Designation is required'
       }),
-      middleName: z.string().optional()
-    }),
-
-    dateOfBirth: z.string({
-      required_error: 'Date of birth is required'
-    }),
-
-    gender: z.string({
-      required_error: 'Gender is required'
-    }),
-
-    bloodGroup: z.string({
-      required_error: 'Blood group is required'
-    }),
-
-    email: z
-      .string({
-        required_error: 'Email is required'
-      })
-      .email(),
-
-    contactNo: z.string({
-      required_error: 'Contact number is required'
-    }),
-
-    emergencyContactNo: z.string({
-      required_error: 'Emergency contact number is required'
-    }),
-
-    presentAddress: z.string({
-      required_error: 'Present address is required'
-    }),
-
-    permanentAddress: z.string({
-      required_error: 'Permanent address is required'
-    }),
-
-    managementDepartment: z.string({
-      required_error: 'Management department is required'
-    }),
-
-    designation: z.string({
-      required_error: 'Designation is required'
+      managementDepartment: z.string().optional(),
+      profileImage: z.string().optional()
     })
   })
-});
+  .transform(data => ({
+    ...data,
+    admin: {
+      ...data.admin,
+      name: formatAdminName(data.admin.name)
+    }
+  }));
 
 const createFaculty = z.object({
   password: z.string().optional(),

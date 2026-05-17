@@ -5,7 +5,8 @@ import ApiError from '../errors/apiError';
 
 const verifyToken = (token: string) => {
   try {
-    const isVerified = verify(token, config.jwt.secret);
+    const normalizedToken = token.startsWith('Bearer ') ? token.slice(7) : token;
+    const isVerified = verify(normalizedToken, config.jwt.secret);
     return isVerified as any;
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token');

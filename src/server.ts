@@ -1,6 +1,7 @@
 import { Server } from 'http';
 import app from './app';
 import config from './config';
+import ApiError from './errors/apiError';
 import logger from './shared/logger';
 import { RedisClient } from './shared/redis';
 
@@ -24,6 +25,12 @@ async function bootstrap() {
 
   const unexpectedErrorHandler = (error: unknown) => {
     logger.error(error);
+
+    // Expected HTTP errors (401, 403, etc.) must not crash the gateway
+    if (error instanceof ApiError) {
+      return;
+    }
+
     exitHandler();
   };
 
